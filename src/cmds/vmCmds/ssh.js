@@ -1,3 +1,4 @@
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 
 export const command = 'ssh';
@@ -17,6 +18,10 @@ export const handler = async argv => {
 
 export async function run(argv) {
   const { name, stage } = argv;
+
+  const logger = new Logger();
+  logger.log('debug', 'SSH VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   await repexlab.operations.ssh(name);

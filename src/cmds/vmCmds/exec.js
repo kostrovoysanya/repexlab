@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { logError, logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -36,20 +36,23 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Executing the command on VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   try {
     await repexlab.operations.exec(name, argv.command);
     if (isEmpty(name)) {
-      logSuccess('Executed the command on all VMs.');
+      logger.log('info', 'Executed the command on all VMs.');
     } else {
-      logSuccess(`Executed the command on VM '${name}'`);
+      logger.log('info', `Executed the command on VM(s) '${name}'`);
     }
   } catch (error) {
     if (isEmpty(name)) {
-      logError('Failed to execute the command on all VMs');
+      logger.log('error', 'Failed to execute the command on all VMs', error);
     } else {
-      logError(`Failed to execute the command on VM '${name}'`);
+      logger.log('error', `Failed to execute the command on VM '${name}'`, error);
     }
     logError(error);
   }

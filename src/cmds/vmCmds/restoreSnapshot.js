@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { logError, logSuccess } from '../../utils/logger';
 import { handler as compile } from './compile';
@@ -36,20 +37,23 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage, snapshotName } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Restoring snapshot VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   try {
     await repexlab.operations.restoreSnapshot(name, snapshotName);
     if (isEmpty(name)) {
-      logSuccess('Restored each VM state from snapshot');
+      logger.log('info', 'Restored each VM state from snapshot');
     } else {
-      logSuccess(`Restored VM '${name}' from snapshot`);
+      logger.log('info', `Restored VM(s) '${name}' from snapshot`);
     }
   } catch (error) {
     if (isEmpty(name)) {
-      logError('Failed to restore each VM state from snapshot');
+      logger.log('error', 'Failed to restore each VM state from snapshot', error);
     } else {
-      logError(`Failed to restore VM '${name}' from snapshot`);
+      logger.log('error', `Failed to restore VM(s) '${name}' from snapshot`, error);
     }
     logError(error);
   }

@@ -29,7 +29,7 @@ export default class VirtualMachine {
     );
 
     this.vagrantfile = new Vagranfile();
-    this.operations = new VirtualMachineOperations(this.compilationTargetDirectory);
+    this.operations = new VirtualMachineOperations(this.compilationTargetDirectory, this.name);
     this.config = new VirtualMachineConfig();
   }
 

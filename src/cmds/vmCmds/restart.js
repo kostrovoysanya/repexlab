@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -29,13 +29,16 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Restarting VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   if (isEmpty(name)) {
     await repexlab.operations.restart();
-    logSuccess('Restarted all VMs');
+    logger.log('info', 'Restarted all VMs');
   } else {
     await repexlab.operations.restart(name);
-    logSuccess(`Restarted VM '${name}'`);
+    logger.log('info', `Restarted VM(s) '${name}'`);
   }
 }

@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import { stringify } from 'yaml';
-import { logSuccess, logInfo } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -30,15 +30,16 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Status VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   if (isEmpty(name)) {
     const statuses = await repexlab.operations.status();
-    logSuccess('VMs statuses:');
-    logInfo(stringify(statuses));
+    logger.log(name, 'info', 'VMs statuses:', statuses);
   } else {
     const statuses = await repexlab.operations.status(name);
-    logSuccess(`VM '${name}' status:`);
-    logInfo(stringify(statuses));
+    logger.log(name, 'info', `VM(s) '${name}' status:`, statuses);
   }
 }

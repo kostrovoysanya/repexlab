@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -29,13 +29,16 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Setuping Hosts on VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   if (isEmpty(name)) {
     await repexlab.operations.setupHosts();
-    logSuccess('Done /etc/hosts setup for all VMs');
+    logger.log('info', 'Done /etc/hosts setup for all VMs');
   } else {
     await repexlab.operations.setupHosts(name);
-    logSuccess(`Done /etc/hosts setup for VM '${name}'`);
+    logger.log('info', `Done /etc/hosts setup for VM(s) '${name}'`);
   }
 }

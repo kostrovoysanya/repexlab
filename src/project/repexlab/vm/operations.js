@@ -15,15 +15,19 @@ import execa from 'execa';
 import moment from 'moment';
 import AtopParser from '../../../report/atopParser';
 import ReportHTML from '../../../report/html';
+import Logger from '../../../utils/logger';
 
 vagrant.promisify();
 
 export default class VirtualMachineOperations {
-  constructor(compilationTargetDirectory) {
+  constructor(compilationTargetDirectory, name) {
     this.compilationTargetDirectory = compilationTargetDirectory;
+    this.name = name;
+    this.logger = new Logger();
   }
 
   async start() {
+    this.logger.logFrameworkAndVirtualMachine(this.name, 'info', 'test start');
     const command = 'vagrant up --no-provision';
     await execa.command(command, {
       cwd: this.compilationTargetDirectory,
@@ -105,10 +109,11 @@ export default class VirtualMachineOperations {
     try {
       const result = await ssh.exec(command);
       ssh.close();
+      this.logger.log('info', `Command exec successfully, result: '${result}'`);
       return result;
     } catch (error) {
       ssh.close();
-      throw error.toString();
+      this.logger.logFrameworkAndVirtualMachine(this.name, 'error', 'Failed to exec command');
     }
   }
 

@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { logError, logSuccess } from '../../utils/logger';
 import { handler as compile } from './compile';
@@ -36,20 +37,23 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage, snapshotName } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Saving snapshots VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   try {
     await repexlab.operations.saveSnapshot(name, snapshotName);
     if (isEmpty(name)) {
-      logSuccess('Saved snapshot for each of VMs');
+      logger.log('info', 'Saved snapshot for each of VMs');
     } else {
-      logSuccess(`Saved snapshot of VM '${name}'`);
+      logger.log('info', `Saved snapshot of VM(s) '${name}'`);
     }
   } catch (error) {
     if (isEmpty(name)) {
-      logError('Failed to save snapshot for each of VMs');
+      logger.log('error', 'Failed to save snapshot for each of VMs', error);
     } else {
-      logError(`Failed to save snapshot of VM '${name}'`);
+      logger.log('error', `Failed to save snapshot of VM(s) '${name}'`, error);
     }
     logError(error);
   }

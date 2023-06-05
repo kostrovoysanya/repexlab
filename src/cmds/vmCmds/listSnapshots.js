@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
 import { stringify } from 'yaml';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { logError, logSuccess, logInfo } from '../../utils/logger';
 import { handler as compile } from './compile';

@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -29,13 +29,16 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Destroying VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   if (isEmpty(name)) {
     await repexlab.operations.destroy();
-    logSuccess('Destroyed all VMs');
+    logger.log('info', 'Destroyed all VMs');
   } else {
     await repexlab.operations.destroy(name);
-    logSuccess(`Destroyed VM '${name}'`);
+    logger.log('info', `Destroyed VM(s) '${name}'`);
   }
 }

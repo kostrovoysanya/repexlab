@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { logError, logSuccess } from '../../utils/logger';
 import { handler as compile } from './compile';
@@ -36,20 +37,23 @@ export const handler = async argv => {
 export async function run(argv) {
   const { name, stage, snapshotName } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Removing snapshot VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   try {
     await repexlab.operations.removeSnapshot(name, snapshotName);
     if (isEmpty(name)) {
-      logSuccess('Removed snapshot for each of VMs');
+      logger.log('info', 'Removed snapshot for each of VMs');
     } else {
-      logSuccess(`Removed snapshot of VM '${name}'`);
+      logger.log('info', `Removed snapshot of VM(s) '${name}'`);
     }
   } catch (error) {
     if (isEmpty(name)) {
-      logError('Failed to remove snapshot for each of VMs');
+      logger.log('error', 'Failed to remove snapshot for each of VMs', error);
     } else {
-      logError(`Failed to remove snapshot of VM '${name}'`);
+      logger.log('error', `Failed to remove snapshot of VM(s) '${name}'`, error);
     }
     logError(error);
   }

@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import moment from 'moment';
-import { logError, logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -52,6 +52,9 @@ export async function run(argv, stageTimer) {
     name, stage, start, end, labels
   } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Reporting VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
 
@@ -71,15 +74,15 @@ export async function run(argv, stageTimer) {
     await repexlab.operations.report(name, now.unix(), startTime, endTime, labels);
 
     if (isEmpty(name)) {
-      logSuccess('Created reports on all VMs.');
+      logger.log('info', 'Created reports on all VMs.');
     } else {
-      logSuccess(`Created a report on VM '${name}'`);
+      logger.log('info', `Created a report on VM(s) '${name}'`);
     }
   } catch (error) {
     if (isEmpty(name)) {
-      logError('Failed to create reports on all VMs');
+      logger.log('error', 'Failed to create reports on all VMs', error);
     } else {
-      logError(`Failed to create a report on VM '${name}'`);
+      logger.log('error', `Failed to create a report on VM(s) '${name}'`, error);
     }
     logError(error);
   }

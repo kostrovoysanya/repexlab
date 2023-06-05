@@ -1,4 +1,4 @@
-import { logError, logSuccess } from '../../utils/logger';
+import Logger from '../../utils/logger';
 import Repexlab from '../../project/repexlab';
 import { handler as compile } from './compile';
 
@@ -53,13 +53,15 @@ export async function run(argv) {
     name, stage, direction, from, to
   } = argv;
 
+  const logger = new Logger();
+  logger.log('info', 'Copying VM(s)');
+
   const repexlab = new Repexlab(stage);
   await repexlab.init('./');
   try {
     await repexlab.operations.copy(name, direction, from, to);
-    logSuccess(`Transferred the target between host and VM '${name}'`);
+    logger.log('info', `Transferred the target between host and VM '${name}'`);
   } catch (error) {
-    logError(`Failed to transfer the target between host and VM '${name}'`);
-    logError(error);
+    logger.log('error', `Failed to transfer the target between host and VM '${name}'`, error);
   }
 }
